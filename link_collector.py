@@ -9,6 +9,25 @@ import os
 import pandas as pd
 import re
 from json import JSONDecoder, JSONDecodeError
+import io
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('words')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+stop_words = set(stopwords.words('english'))
+from nltk.corpus import words
+from sklearn.feature_extraction.text import TfidfVectorizer
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
+### set up plotting parameters
+from matplotlib import rcParams
+plt.style.use('seaborn-poster')
+plt.rcParams['font.family'] = 'serif'
+rcParams['font.sans-serif'] = ['Palatino']
+rcParams['figure.max_open_warning'] = 30
 
 KIDS = config.KIDS
 class LinkCollector(object):
@@ -147,6 +166,15 @@ def stream_json(file_obj, buf_size=1024, decoder=JSONDecoder()):
     if ex is not None:
         raise ex
 
+def remove_stop(text):
+    try:
+        text_tokens = word_tokenize(text)
+        tokens_without_sw = [word for word in text_tokens
+                             if (word.lower().strip() not in stopword_set) and (word.lower().strip() in word_set)]
+        return tokens_without_sw
+    except:
+        return ['']
+
 
 if __name__ == '__main__':
 
@@ -169,6 +197,43 @@ if __name__ == '__main__':
     video_detail_collector.retrieve()
     res_df = extract_video_tag_des('collected_video_detail')
     res_df.to_csv('toys_video_details.csv')
+
+    ### speed up searching with set
+    stopword_set = set(stopwords.words())
+    word_set = set(words.words())
+
+    res_df['tags_w/o_stop'] = res_df.tags.apply(remove_stop)
+    res_df['desc_w/o_stop'] = res_df.description.apply(remove_stop)
+
+    tags_corpus = [','.join(x) for x in res_df['tags_w/o_stop']]
+    desc_corpus = [','.join(x) for x in res_df['desc_w/o_stop']]
+    tags_vectorizer = TfidfVectorizer()
+    tags_X = tags_vectorizer.fit_transform(tags_corpus)
+    desc_vectorizer = TfidfVectorizer()
+    desc_X = desc_vectorizer.fit_transform(desc_corpus)
+    new_tags_x = pd.DataFrame(tags_X.toarray(),
+                              columns=tags_vectorizer.get_feature_names(), index=res_df['video'])
+
+    new_desc_x = pd.DataFrame(desc_X.toarray(),
+                              columns=desc_vectorizer.get_feature_names(), index=res_df['video'])
+
+    first_30 = new_tags_x.sum().sort_values(ascending=False)[
+               3:30]  ### the first 4 are either toy or kids (search terms)
+    frist_30_in_desc = new_desc_x.sum().sort_values(ascending=False)[:30]
+
+    plt.figure(figsize=(20, 8))
+    sns.barplot(x=first_30.index, y=first_30)
+    plt.xticks(rotation=60, fontsize=12)
+    plt.xlabel('Key Words')
+    plt.ylabel('Accumulated TFIDF')
+    plt.savefig('Tags_tfidf.pdf')
+
+    plt.figure(figsize=(20, 8))
+    sns.barplot(x=frist_30_in_desc.index, y=frist_30_in_desc)
+    plt.xticks(rotation=60, fontsize=12)
+    plt.xlabel('Description Key Words')
+    plt.ylabel('Accumulated TFIDF')
+    plt.savefig('description_tfidf.pdf')
 
 
 
