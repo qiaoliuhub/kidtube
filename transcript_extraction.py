@@ -4,6 +4,18 @@ import argparse
 import pandas as pd
 import pdb
 import time
+import requests
+import pickle
+import os
+
+def persist_transcript(transcripts):
+
+    transcripts_dict, unfound = transcripts
+    pd.DataFrame(unfound).to_csv('unfound.csv', mode='a+', index=False, header=False)
+    if not os.path.exists('video_caption_pickle'):
+        os.mkdir('video_caption_pickle')
+    for key in transcripts_dict.keys():
+        pickle.dump(transcripts_dict[key], open(os.path.join('video_caption_pickle', key+'.p'), 'wb+'))
 
 if __name__ == '__main__':
 
@@ -20,13 +32,15 @@ if __name__ == '__main__':
                "http": "http://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port)}
 
     video_detail_df = pd.read_csv(video_details_file, index_col = 0)
-    video_ids = list(video_detail_df['video'])
+    video_ids = list(video_detail_df[video_detail_df['caption'] == True]['video'])
 
     for i in range(0, len(video_ids), 50):
-        video_ids_sub = video_ids[i:i+1]
-        transcripts = YouTubeTranscriptApi.get_transcripts(video_ids_sub, languages=['en'])
+        video_ids_sub = video_ids[i:i+3]
+        transcripts = YouTubeTranscriptApi.get_transcripts(video_ids_sub, languages=['en'],
+                                                           continue_after_error= True, proxies=proxies)
+        persist_transcript(transcripts)
         pdb.set_trace()
-        transcripts.fetch()
+        time.sleep(600)
         if i == 0:
             break
 
