@@ -3,6 +3,7 @@ import config
 import argparse
 import pandas as pd
 import pdb
+import time
 
 if __name__ == '__main__':
 
@@ -21,7 +22,11 @@ if __name__ == '__main__':
     video_detail_df = pd.read_csv(video_details_file, index_col = 0)
     video_ids = list(video_detail_df['video'])
 
-    transcripts = YouTubeTranscriptApi.get_transcripts(video_ids, languages=['en'], proxies=proxies)
-    pdb.set_trace()
-    transcripts.fetch()
+    for i in range(0, len(video_ids), 50):
+        video_ids_sub = video_ids[i:i+50]
+        transcripts = YouTubeTranscriptApi.get_transcripts(video_ids, languages=['en'], proxies=proxies)
+        pdb.set_trace()
+        transcripts.fetch()
+        if i == 0:
+            break
 

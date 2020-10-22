@@ -228,7 +228,7 @@ if __name__ == '__main__':
     link_collector = LinkCollector(search_word, folder_name_key_words)  ### use to collect related link
     count = 0
     next_page_token = None
-    while count < 0 and (count==0 or next_page_token is not None):
+    while count < 50 and (count==0 or next_page_token is not None):
         ### make sure it won't use all quotes from youtubeapi (10000/perday, 1 per video query, 100 per key word search)
 
         link_collector.search(next_page_token)
