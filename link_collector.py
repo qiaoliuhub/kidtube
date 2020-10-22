@@ -245,7 +245,7 @@ if __name__ == '__main__':
     video_list = extract_video_from_json(link_collector_dir)
 
     video_detail_collector = VideoDetailsCollector(video_list = video_list, dir_name_key_word=folder_name_key_words)
-    # video_detail_collector.retrieve()
+    video_detail_collector.retrieve()
     video_detail_dir = video_detail_collector.get_persisted_data_directory()
     res_df = extract_video_tag_des(video_detail_dir, category=search_word)
     res_df = res_df.drop_duplicates(subset=['video', 'title'])
