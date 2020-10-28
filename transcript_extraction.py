@@ -35,12 +35,11 @@ if __name__ == '__main__':
     video_ids = list(video_detail_df[video_detail_df['caption'] == True]['video'])
 
     for i in range(0, len(video_ids), 50):
-        video_ids_sub = video_ids[i:i+3]
+        print('start to extract videos {0!r}'.format(str(i)))
+        video_ids_sub = video_ids[i:i+50]
         transcripts = YouTubeTranscriptApi.get_transcripts(video_ids_sub, languages=['en'],
                                                            continue_after_error= True, proxies=proxies)
         persist_transcript(transcripts)
-        pdb.set_trace()
+        print(str(i))
         time.sleep(600)
-        if i == 0:
-            break
 
