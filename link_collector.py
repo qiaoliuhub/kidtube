@@ -54,7 +54,7 @@ class LinkCollector(object):
                                           q=self.query_key_word,
                                           relevanceLanguage='en',
                                           type='video',
-                                          videoCaption= 'none' # ''closedCaption' #'any', 'none'
+                                          videoCaption= 'closedCaption' # ''closedCaption' #'any', 'none'
                                           )
         res = req.execute()
         self.cur_res = res
