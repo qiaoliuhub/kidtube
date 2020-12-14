@@ -7,9 +7,14 @@ import time
 import requests
 import pickle
 import os
+import glob
 
 def persist_transcript(transcripts):
-
+    '''
+    Save the retrived transcripts into video caption pickle folder with key (video id) as its name
+    :param transcripts: dict, key: video id, value: transcript
+    :return:
+    '''
     transcripts_dict, unfound = transcripts
     pd.DataFrame(unfound).to_csv('./unfound.csv', mode='a+', index=False, header=False)
     if not os.path.exists('./video_caption_pickle'):
@@ -17,13 +22,28 @@ def persist_transcript(transcripts):
     for key in transcripts_dict.keys():
         pickle.dump(transcripts_dict[key], open(os.path.join('./video_caption_pickle', key+'.p'), 'wb+'))
 
+def get_all_video_ids_with_transcripts(dir):
+
+    '''
+    Given a video caption pickle directory, extract the video ids appear as the file name
+    :param dir:
+    :return: set
+    '''
+    video_ids = set()
+    for file_name in glob.glob(dir + '/*.p'):
+        video_id = file_name.rsplit('/', 1)[1].split('.')[0]
+        video_ids.add(video_id)
+    return video_ids
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--video_details_file')
+    parser.add_argument('--video_caption_pickle_folder', help = 'the folder name to save all retrieved transcripts')
 
     args = parser.parse_args()
     video_details_file = args.video_details_file
+    video_caption_pickle_folder = args.video_caption_pickle_folder
 
     proxy_host = "proxy.crawlera.com"
     proxy_port = "8010"
@@ -34,7 +54,12 @@ if __name__ == '__main__':
     video_detail_df = pd.read_csv(video_details_file, index_col = 0)
     video_ids = list(video_detail_df[video_detail_df['caption'] == True]['video'])
 
-    video_ids = ['-TIkkGSHWeM']
+    ### extract the video ids appear as the file name in a folder
+    video_set_with_transcripts = get_all_video_ids_with_transcripts(video_caption_pickle_folder)
+    video_ids = list(set(video_ids) - video_set_with_transcripts)
+
+    # video_ids = ['-TIkkGSHWeM']
+    print(len(video_ids))
     for i in range(0, len(video_ids), 50):
         print('start to extract videos {0!r}'.format(str(i)))
         video_ids_sub = video_ids[i:i+50]
