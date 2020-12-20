@@ -3,8 +3,8 @@ FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 LABEL maintainer="Hugging Face"
 LABEL repository="transformers"
 
-RUN apt update && \
-    apt install -y bash \
+RUN apt-get update && \
+    apt-get install -y bash \
                    build-essential \
                    git \
                    curl \
@@ -24,7 +24,7 @@ RUN cd apex && \
     pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
 WORKDIR /workspace
-COPY . transformers/
+RUN git clone https://github.com/huggingface/transformers
 RUN cd transformers/ && \
     python3 -m pip install --no-cache-dir .
 
