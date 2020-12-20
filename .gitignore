@@ -4,3 +4,7 @@ __pycache__
 .idea/
 kids_tube/*
 *.docx
+*.pdf
+*.pptx
+.vscode/*
+.DS_Store

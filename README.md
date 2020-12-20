@@ -2,7 +2,8 @@
 
 ### To generate more links 
 ```
-python link_collector.py --search_word 'kids play' --folder_name_key_words kids_play --csv_result_dir ./video_details
+python link_collector.py --search_word 'kids play' \
+--folder_name_key_words kids_play --csv_result_dir ./video_details
 ```
 
 - The search results will be saved in collected_link_json_<<kids_play>> as several json files
