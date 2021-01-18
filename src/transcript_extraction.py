@@ -8,6 +8,7 @@ import requests
 import pickle
 import os
 import glob
+
 CUR_FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 def persist_transcript(transcripts):
     '''
@@ -56,6 +57,7 @@ if __name__ == '__main__':
 
     ### extract the video ids appear as the file name in a folder
     video_set_with_transcripts = get_all_video_ids_with_transcripts(video_caption_pickle_folder)
+    pdb.set_trace()
     video_ids = list(set(video_ids) - video_set_with_transcripts)
 
     # video_ids = ['-TIkkGSHWeM']

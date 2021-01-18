@@ -8,4 +8,6 @@ kids_tube/*
 *.pptx
 .vscode/*
 .DS_Store
-Graph/*
+Graph/*%
+*checkpoints*
+wandb*

@@ -16,7 +16,11 @@ RUN apt-get update && \
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir \
     mkl \
-    torch
+    torch \
+    pytorch-lightning \
+    pandas \
+    scikit-learn \
+    wandb
 
 RUN git clone https://github.com/NVIDIA/apex
 RUN cd apex && \
