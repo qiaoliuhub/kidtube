@@ -65,6 +65,7 @@ if __name__ == '__main__':
     for i in range(0, len(video_ids), 50):
         print('start to extract videos {0!r}'.format(str(i)))
         video_ids_sub = video_ids[i:i+50]
+        print(video_ids_sub)
         transcripts = YouTubeTranscriptApi.get_transcripts(video_ids_sub, languages=['en'],
                                                            continue_after_error= True, proxies=proxies)
         persist_transcript(transcripts)
