@@ -54,11 +54,13 @@ if __name__ == '__main__':
 
     video_detail_df = pd.read_csv(video_details_file, index_col = 0)
     video_ids = list(video_detail_df[video_detail_df['caption'] == True]['video'])
+    
 
     ### extract the video ids appear as the file name in a folder
     video_set_with_transcripts = get_all_video_ids_with_transcripts(video_caption_pickle_folder)
-    pdb.set_trace()
-    video_ids = list(set(video_ids) - video_set_with_transcripts)
+    unfound_video = set(pd.read_csv(os.path.join(CUR_FILE_DIR, '../Data', 'unfound.csv'), header = None)[0])
+
+    video_ids = list(set(video_ids) - video_set_with_transcripts - unfound_video)
 
     # video_ids = ['-TIkkGSHWeM']
     print(len(video_ids))
