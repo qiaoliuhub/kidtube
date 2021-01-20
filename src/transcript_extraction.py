@@ -61,7 +61,7 @@ if __name__ == '__main__':
     unfound_video = set(pd.read_csv(os.path.join(CUR_FILE_DIR, '../Data', 'unfound.csv'), header = None)[0])
 
     video_ids = list(set(video_ids) - video_set_with_transcripts - unfound_video)
-
+    
     # video_ids = ['-TIkkGSHWeM']
     print(len(video_ids))
     for i in range(0, len(video_ids), 50):
